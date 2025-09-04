@@ -1,4 +1,5 @@
 import pymysql
+
 class Database:
     def __init__(self):
         self.host = 'localhost'
