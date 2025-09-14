@@ -2,7 +2,7 @@ from flask import jsonify
 import functions
 from services.employees import EmployeesService
 import uuid
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, create_refresh_token
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, create_refresh_token, get_jwt
 
 
 
@@ -26,6 +26,10 @@ class EmployeesController:
         department_id = data["department_id"]
         profile_pic = data["profile_pic"]
         employee_password = data["employee_password"]
+        claims = get_jwt
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
 
         hashed_password = functions.hash_password(employee_password)
 
@@ -41,6 +45,10 @@ class EmployeesController:
     def viewEmployees(self, request):
         data = request.get_json()
         company_id = data["company_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.employees_service.viewEmployees(company_id)
         if not result:
             return jsonify({"message": "No employees found"}), 404
@@ -52,6 +60,10 @@ class EmployeesController:
     def viewEmployeeDepartment(self, request):
         data = request.get_json()
         department_id = data["department_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.employees_service.viewEmployeeDepartment(department_id)
         if not result:
             return jsonify({"message": "No employees found"}), 404
@@ -63,6 +75,10 @@ class EmployeesController:
         data = request.get_json()
         employee_email = data["employee_email"]
         password = data["password"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.employees_service.employeeeLogin(employee_email, password)
         if not result:
             return jsonify({"message": "Login failed"}), 401
@@ -82,6 +98,10 @@ class EmployeesController:
     def employeeProfile(self, request):
         data = request.get_json()
         employee_id = data["employee_id"]
+        clams = get_jwt()
+        role = clams["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.employees_service.employeeProfile(employee_id)
         if not result:
             return jsonify({"message": "Employee not found"}), 404
@@ -102,6 +122,10 @@ class EmployeesController:
         employee_status = data["employee_status"]
         profile_pic = data["profile_pic"]
         employee_password = data["employee_password"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
 
         hashed_password = functions.hash_password(employee_password)
 
@@ -116,6 +140,10 @@ class EmployeesController:
     def deleteEmployee(self, request):
         data = request.get_json()
         employee_id = data["employee_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.employees_service.deleteEmployee(employee_id)
         if result:
             return jsonify({"message": "Employee deleted successfully"}), 200

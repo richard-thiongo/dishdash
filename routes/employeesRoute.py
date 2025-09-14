@@ -32,6 +32,6 @@ def employee_profile():
 def update_employee_profile():
     return employees_controller.updateEmployeeProfile(request)
 
-@employees_blueprint.route('/delete', methods=['DELeTE'])
+@employees_blueprint.route('/delete', methods=['DELETE'])
 def delete_employee():
     return employees_controller.deleteEmployee(request)

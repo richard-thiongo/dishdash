@@ -2,7 +2,7 @@ from flask import jsonify
 import functions
 from services.companies import CompanyService
 import uuid
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt_identity,  create_refresh_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt_identity,  create_refresh_token, get_jwt
 
 class CompanyController:
     def __init__(self):
@@ -37,7 +37,8 @@ class CompanyController:
          else:
              if "password" in result:
                    del result["password"]
-             access_token = create_access_token(identity = email, fresh = True)
+             role = "company"
+             access_token = create_access_token(identity = email, fresh = True, additional_claims={"role": role} )
              refresh_token = create_refresh_token(email)
              return jsonify({
                  "message": "Login successful",
@@ -50,6 +51,10 @@ class CompanyController:
     def companyProfile(self, request):
         data = request.get_json()
         company_id = data["company_id"]
+        claims = get_jwt
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.company_service.companyProfile(company_id)
 
         if not result:
@@ -65,6 +70,10 @@ class CompanyController:
         data = request.get_json()
         department_name = data["department_name"]
         company_id = data["company_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
 
         result = self.company_service.createDepartment(department_name, company_id)
         print(result)
@@ -78,6 +87,10 @@ class CompanyController:
     def getDepartments(self, request):
         data = request.get_json()
         company_id = data["company_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.company_service.getDepartments(company_id)
         if not result:
             return jsonify({"message": "No departments found"}), 404
@@ -91,6 +104,10 @@ class CompanyController:
         data = request.get_json()
         department_id = data["department_id"]
         department_name = data["department_name"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.company_service.updateDepartment(department_id, department_name)
         if result:
             return jsonify({"message": "Department updated successfully"}), 200
@@ -103,6 +120,10 @@ class CompanyController:
     def deleteDepartment(self, request):
         data = request.get_json()
         department_id = data["department_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
         result = self.company_service.deleteDepartment(department_id)
         if result:
             return jsonify({"message": "Department deleted successfully"}), 200
