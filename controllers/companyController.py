@@ -129,6 +129,93 @@ class CompanyController:
             return jsonify({"message": "Department deleted successfully"}), 200
         else:
             return jsonify({"message": "Department deletion failed"}), 500
+        
+
+
+
+    # Route to get department by department_id
+    @jwt_required()
+    def getDepartmentById(self, request):
+        data = request.get_json()
+        department_id = data["department_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
+        result = self.company_service.getDepartmentById(department_id)
+        if not result:
+            return jsonify({"message": "Department not found"}), 404
+        else:
+            return jsonify({"department": result}), 200
+        
+
+    # Route to count all departments
+    @jwt_required()
+    def countDepartments(self, request):
+        data = request.get_json()
+        company_id = data["company_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
+        result = self.company_service.countDepartments(company_id)
+        if not result:
+            return jsonify({"message": "No departments found"}), 404
+        else:
+            return jsonify({"count": result}), 200
+        
+
+    # Route to get all employees by department_id
+    @jwt_required()
+    def getEmployeesByDepartment(self, request):
+        data = request.get_json()
+        department_id = data["department_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
+        result = self.company_service.getEmployeesByDepartment(department_id)
+        if not result:
+            return jsonify({"message": "No employees found"})
+        else:
+            return jsonify({"employees": result}), 200
+        
+
+
+    # Route to count the number of employees by department
+    @jwt_required()
+    def countEmployeesByDepartment(self, request):
+        data = request.get_json()
+        department_id = data["department_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
+        result = self.company_service.countEmployeesByDepartment(department_id)
+        if not result:
+            return jsonify({"message": "No employees found"}), 404
+        else:
+            return jsonify( result), 200
+        
+
+
+    # Route to count all employees
+    @jwt_required()
+    def countAllEmployees(self, request):
+        data = request.get_json()
+        company_id = data["company_id"]
+        claims = get_jwt()
+        role = claims["role"]
+        if role != "company":
+            return jsonify({"message": "Unauthorized"}), 401
+        result = self.company_service.countAllEmployees(company_id)
+        if not result:
+            return jsonify({"message": "No employees found"}), 404
+        else:
+            return jsonify({"count": result}), 200
+
+
+    
 
 
         

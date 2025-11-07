@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from controllers.menuController import MenusController
 
+
 # Define the Blueprint for menu routes
 menus_blueprint = Blueprint('menus', __name__, url_prefix='/menus')
 menus_controller = MenusController()
@@ -29,3 +30,9 @@ def delete_menu():
 @menus_blueprint.route('/viewById', methods=['POST'])
 def view_menu_by_id():
     return menus_controller.viewMenuById(request)
+
+
+# Route to view all menus
+@menus_blueprint.route('/viewAll', methods=['POST'])
+def view_all_menu():
+    return menus_controller.viewAllMenu(request)

@@ -3,6 +3,7 @@ import functions
 from services.restaurants import RestaurantsService
 import uuid
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt_identity,  create_refresh_token, get_jwt
+from functions import hash_password, hash_verify
 
 class RestaurantsController:
     def __init__(self):
@@ -113,15 +114,10 @@ class RestaurantsController:
         
 
 
-    @jwt_required()
     def viewRestaurants(self ):
-        claims = get_jwt
-        role = claims["role"]
-        if role != "company":
-            return jsonify({"message": "Unauthorized"}), 401
         result = self.restaurants_service.viewRestaurants()
         if not result:
-            return jsonify({"message": "No restaurants found"}), 404
+            return jsonify({"message": "Restaurants retrieval failed"}), 500
         else:
             return jsonify({"restaurants": result}), 200
             

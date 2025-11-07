@@ -26,7 +26,7 @@ class EmployeesController:
         department_id = data["department_id"]
         profile_pic = data["profile_pic"]
         employee_password = data["employee_password"]
-        claims = get_jwt
+        claims = get_jwt()
         role = claims["role"]
         if role != "company":
             return jsonify({"message": "Unauthorized"}), 401
@@ -74,11 +74,7 @@ class EmployeesController:
     def employeeeLogin(self, request):
         data = request.get_json()
         employee_email = data["employee_email"]
-        password = data["password"]
-        claims = get_jwt()
-        role = claims["role"]
-        if role != "company":
-            return jsonify({"message": "Unauthorized"}), 401
+        password = data["employee_password"]
         result = self.employees_service.employeeeLogin(employee_email, password)
         if not result:
             return jsonify({"message": "Login failed"}), 401
@@ -97,12 +93,8 @@ class EmployeesController:
 
     def employeeProfile(self, request):
         data = request.get_json()
-        employee_id = data["employee_id"]
-        clams = get_jwt()
-        role = clams["role"]
-        if role != "company":
-            return jsonify({"message": "Unauthorized"}), 401
-        result = self.employees_service.employeeProfile(employee_id)
+        employee_email = data["employee_email"]
+        result = self.employees_service.employeeProfile(employee_email)
         if not result:
             return jsonify({"message": "Employee not found"}), 404
         else:

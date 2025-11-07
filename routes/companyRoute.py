@@ -42,5 +42,35 @@ def delete_department():
     return companies_controller.deleteDepartment(request)
 
 
+# Route to get a departments by department_id
+@companies_blueprint.route('/departments', methods=['POST'])
+def get_department_by_id():
+    return companies_controller.getDepartmentById(request)
+
+
+# Route to count departments by company_id
+@companies_blueprint.route('/departments/count', methods=['POST'])
+def count_departments():
+    return companies_controller.countDepartments(request)
+
+
+# Route to get employees by department_id
+@companies_blueprint.route('/employees', methods=['POST'])
+def get_employees_by_department():
+    return companies_controller.getEmployeesByDepartment(request)
+
+
+# Route to count employees by department_id
+@companies_blueprint.route('/employees/count', methods=['POST'])
+def count_employees_by_department():
+    return companies_controller.countEmployeesByDepartment(request)
+
+
+# Route to count all employees by company_id
+@companies_blueprint.route('/employees/all/count', methods=['POST'])
+def count_all_employees():
+    return companies_controller.countAllEmployees(request)
+
+
 
 
