@@ -30,7 +30,7 @@ class Database:
             self.connection.close()
             self.connection = None
  
-    # ✅ Context Manager methods
+    #  Context Manager methods
     def __enter__(self):
         # Return cursor so you can use it directly inside `with`
         return self.get_cursor()

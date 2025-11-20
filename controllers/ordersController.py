@@ -189,11 +189,30 @@ class OrdersController:
             return jsonify({"message": "No orders found"}), 404
         else:
             return jsonify({"orders": result}), 200
-        
 
 
 
 
 
 
- 
+    def view_orders_by_restaurant(self, restaurant_id):
+        try:
+            # Call the service method to get orders
+            orders = self.orders_service.viewOrdersByRestaurant(restaurant_id)
+            
+            # Return the response
+            return jsonify({
+                'success': True,
+                'message': 'Orders retrieved successfully',
+                'data': orders,
+                'count': len(orders)
+            }), 200
+            
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'message': f'Error fetching orders: {str(e)}',
+                'data': None,
+                'count': 0
+            }), 500
+

@@ -31,38 +31,29 @@ class CompanyService:
         #     self.db.close()
 
 
-    # function to login company
     def companyLogin(self, company_email, password):
         query = "SELECT * FROM companies WHERE company_email = %s"
         try:
             with Database() as cursor:
-                data = (company_email)
+                data = (company_email,) 
                 cursor.execute(query, data)
-                if cursor.rowcount  == 0:
-                    return False
+
+                if cursor.rowcount == 0:
+                    print(f"Login failed: company '{company_email}' not found.")
+                    return None  
+
+                result = cursor.fetchone()  # fetch inside the context
+
+                # Verify password
+                if functions.hash_verify(password, result['password']):
+                    return result
                 else:
-                    result = cursor.fetchone()
-                    if  functions.has_verify(password, result['password']):
-                        return result 
-                    else:
-                        return False
-            # cursor = self.db.get_cursor()
-            # data = (company_email)
-            # cursor.execute(query, data)
-            # # print(cursor.fetchone())
-            # if cursor.rowcount  == 0:
-            #     return False
-            # else:
-            #     result = cursor.fetchone()
-            #     if  functions.has_verify(password, result['password']):
-            #         return result 
-            #     else:
-            #         return False
+                    print(f"Login failed: wrong password for '{company_email}'.")
+                    return None
         except Exception as e:
-            # print(e)
-            return False
-        # finally:
-        #     self.db.close()
+            print("Login error:", e)
+            return None
+
 
     # make a function to get company profile by company_id
     def companyProfile(self, company_id):
@@ -352,4 +343,3 @@ class CompanyService:
        
 
                                                                                                                     
-

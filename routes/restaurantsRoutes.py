@@ -34,3 +34,18 @@ def delete_restaurant():
 @restaurants_blueprint.route('/view', methods=['GET'])
 def view_restaurants():
     return restaurants_controller.viewRestaurants()
+
+
+
+
+# Route to get total orders of a restaurant
+@restaurants_blueprint.route('/total-orders', methods=['POST'])
+def total_orders():
+    return restaurants_controller.getTotalOrders(request)
+
+
+
+@restaurants_blueprint.route('/restaurant/<string:restaurant_id>', methods=['GET'])
+def get_restaurant_orders(restaurant_id):
+    return restaurants_controller.viewOrdersByRestaurant(restaurant_id)
+

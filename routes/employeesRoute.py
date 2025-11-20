@@ -19,6 +19,9 @@ def view_employees():
 def view_employee_department():
     return employees_controller.viewEmployeeDepartment(request)
 
+@employees_blueprint.route('/view_orders', methods=['POST'])
+def view_employee_orders():
+    return employees_controller.viewEmployeeOrders(request)
 
 @employees_blueprint.route('/login', methods=['POST'])
 def employee_login():

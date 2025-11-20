@@ -120,10 +120,37 @@ class RestaurantsController:
             return jsonify({"message": "Restaurants retrieval failed"}), 500
         else:
             return jsonify({"restaurants": result}), 200
-            
 
 
+
+
+    @jwt_required()
+    def getTotalOrders(self, request):
+        data = request.get_json()
+        restaurant_id = data.get("restaurant_id")
     
-
-
+        claims = get_jwt()
+        role = claims.get("role")
+        if role != "restaurant":
+            return jsonify({"message": "Unauthorized"}), 401
     
+        total_orders = self.restaurants_service.totalOrders(restaurant_id)
+        return jsonify({"total_orders": total_orders}), 200
+
+
+
+    @jwt_required()
+    def viewOrdersByRestaurant(self, restaurant_id):
+        claims = get_jwt()
+        role = claims["role"]
+
+        # You can adjust the condition depending on your roles
+        if role not in ["restaurant", "admin", "company", "employee"]:
+            return jsonify({"message": "Unauthorized"}), 401
+
+        result = self.restaurants_service.viewOrdersByRestaurant(restaurant_id)
+
+        if not result:
+            return jsonify({"message": "No orders found"}), 404
+
+        return jsonify({"orders": result}), 200

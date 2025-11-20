@@ -4,6 +4,7 @@ from controllers.ordersController import OrdersController
 orders_blueprint = Blueprint('orders', __name__, url_prefix='/orders')
 orders_controller = OrdersController()
 
+# CRUD ROUTES
 @orders_blueprint.route('/create', methods=['POST'])
 def create_order():
     return orders_controller.createOrder(request)
@@ -12,7 +13,7 @@ def create_order():
 def view_orders():
     return orders_controller.viewOrders()
 
-@orders_blueprint.route('/veiwById', methods=['POST'])
+@orders_blueprint.route('/viewById', methods=['POST'])
 def view_order_by_id():
     return orders_controller.viewOrderById(request)
 
@@ -43,3 +44,7 @@ def view_orders_by_status():
 @orders_blueprint.route('/viewByDate', methods=['POST'])
 def view_orders_by_date():
     return orders_controller.viewOrdersByDate(request)
+
+@orders_blueprint.route('/restaurant/<string:restaurant_id>', methods=['GET'])
+def get_restaurant_orders(restaurant_id):
+    return orders_controller.view_orders_by_restaurant(restaurant_id)

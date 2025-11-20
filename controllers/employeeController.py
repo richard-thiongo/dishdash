@@ -4,15 +4,9 @@ from services.employees import EmployeesService
 import uuid
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, create_refresh_token, get_jwt
 
-
-
-
-
-
 class EmployeesController:
     def __init__(self):
         self.employees_service = EmployeesService()
-
 
     # create employee
     @jwt_required()
@@ -38,8 +32,6 @@ class EmployeesController:
             return jsonify({"message": "Employee added successfully"}), 201
         else:
             return jsonify({"message": "Employee addition failed"}), 500
-        
-
 
     @jwt_required()
     def viewEmployees(self, request):
@@ -54,7 +46,6 @@ class EmployeesController:
             return jsonify({"message": "No employees found"}), 404
         else:
             return jsonify({"employees": result}), 200
-        
 
     @jwt_required()
     def viewEmployeeDepartment(self, request):
@@ -69,7 +60,6 @@ class EmployeesController:
             return jsonify({"message": "No employees found"}), 404
         else:
             return jsonify({"employees": result}), 200
-        
 
     def employeeeLogin(self, request):
         data = request.get_json()
@@ -81,15 +71,14 @@ class EmployeesController:
         else:
             if "password" in result:
                    del result["password"]
-            access_token = create_access_token(identity = employee_email, fresh = True)
-            refresh_token = create_refresh_token(employee_email)
+            access_token = create_access_token(identity = employee_email, fresh = True, additional_claims={"role": "employee"} )
+            refresh_token = create_refresh_token(employee_email, additional_claims={"role": "employee"} )
             return jsonify({
                 "message": "Login successful",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "employee": result
             }), 200
-        
 
     def employeeProfile(self, request):
         data = request.get_json()
@@ -101,8 +90,6 @@ class EmployeesController:
             if "password" in result:
                    del result["password"]
             return jsonify({"employee": result}), 200
-        
-
 
     def updateEmployeeProfile(self, request):
         data = request.get_json()
@@ -126,8 +113,6 @@ class EmployeesController:
             return jsonify({"message": "Employee updated successfully"}), 200
         else:
             return jsonify({"message": "Employee update failed"}), 500
-        
-
 
     def deleteEmployee(self, request):
         data = request.get_json()
@@ -141,18 +126,22 @@ class EmployeesController:
             return jsonify({"message": "Employee deleted successfully"}), 200
         else:
             return jsonify({"message": "Employee deletion failed"}), 500
+
+    @jwt_required()
+    def viewEmployeeOrders(self, request):
+        data = request.get_json()
+        employee_id = data["employee_id"]
+
+        claims = get_jwt()
+        role = claims["role"]
+
+        # Only employeee role allowed
+        if role != "employee":
+            return jsonify({"message": "Unauthorized"}), 401
+
+        result = self.employees_service.viewEmployeeOrders(employee_id)
+
+        if not result:
+            return jsonify({"message": "No orders found for this employee"}), 404
         
-
-
-
-
-
-
-            
-
-
-        
-
-    
-   
-        
+        return jsonify({"orders": result}), 200

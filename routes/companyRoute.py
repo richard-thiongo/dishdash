@@ -10,6 +10,7 @@ companies_controller = CompanyController()
 @companies_blueprint.route('/create', methods=['POST'])
 def create_company():
     return companies_controller.createCompany(request)
+
 # Route for company login
 @companies_blueprint.route('/login', methods=['POST'])
 def company_login():
@@ -70,7 +71,3 @@ def count_employees_by_department():
 @companies_blueprint.route('/employees/all/count', methods=['POST'])
 def count_all_employees():
     return companies_controller.countAllEmployees(request)
-
-
-
-

@@ -156,6 +156,60 @@ class RestaurantsService:
         #     self.db.close()
 
 
+
+    def totalOrders(self, restaurant_id):
+        query = """
+        SELECT COUNT(o.order_id) AS total_orders
+        FROM orders o
+        JOIN menu m ON o.menu_id = m.menu_id
+        WHERE m.restaurant_id = %s
+        """
+        try:
+            with Database() as cursor:
+                data = (restaurant_id,)
+                cursor.execute(query, data)
+                if cursor.rowcount == 0:
+                    return 0
+                else:
+                    result = cursor.fetchone()
+                    return result['total_orders'] if result and 'total_orders' in result else 0
+        except Exception as e:
+            print(e)
+            return 0
+
+
+
+    def viewOrdersByRestaurant(self, restaurant_id):
+        query = """
+            SELECT 
+                o.order_id,
+                c.company_name,
+                m.menu_name,
+                m.menu_photo,
+                m.menu_price,
+                o.order_date,
+                o.is_paid
+            FROM orders o
+            JOIN employees e ON o.employee_id = e.employee_id
+            JOIN companies c ON e.company_id = c.company_id
+            JOIN menu m ON o.menu_id = m.menu_id
+            WHERE m.restaurant_id = %s
+            ORDER BY o.order_date DESC
+            """
+        try:
+            with Database() as cursor:
+                cursor.execute(query, (restaurant_id,))
+                result = cursor.fetchall()
+                return result
+        except Exception as e:
+            print(e)
+            return []
+
+
+
+
+
+
     
 
 

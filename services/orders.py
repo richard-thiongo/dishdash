@@ -277,4 +277,67 @@ class OrdersService:
 
 
 
+# View orders by restaurant ID with complete JOIN details
+def viewOrdersByRestaurant(self, restaurant_id):
+    """
+    Fetch orders for a specific restaurant along with menu, employee, company, and payment details.
+    Returns a list of orders. Returns [] if none found or on error.
+    """
+    query = """
+    SELECT 
+        o.order_id,
+        o.order_date,
+        o.is_paid,
+        m.menu_id,
+        m.menu_name,
+        m.menu_description,
+        m.menu_price,
+        m.category,
+        m.menu_photo,
+        m.menu_status,
+        e.employee_id,
+        e.first_name,
+        e.last_name,
+        e.employee_email,
+        e.profile_pic,
+        c.company_id,
+        c.company_name,
+        c.company_address,
+        c.company_phone,
+        c.company_email AS company_email,
+        p.payment_id,
+        p.payment_code,
+        p.payment_amount
+    FROM orders o
+    JOIN menu m ON o.menu_id = m.menu_id
+    JOIN employees e ON o.employee_id = e.employee_id
+    JOIN companies c ON e.company_id = c.company_id
+    LEFT JOIN payments p ON o.payment_id = p.payment_id
+    WHERE m.restaurant_id = %s
+    ORDER BY o.order_date DESC
+    """
     
+    try:
+        with Database() as cursor:
+            # Ensure single-element tuple
+            data = (str(restaurant_id),)
+            cursor.execute(query, data)
+            
+            if cursor.rowcount == 0:
+                return []
+
+            # Convert results to list of dictionaries
+            columns = [desc[0] for desc in cursor.description]
+            orders_list = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            return orders_list
+
+    except Exception as e:
+        # Print detailed error for debugging
+        print(f"[ERROR] viewOrdersByRestaurant: {e}")
+      
+        return []
+
+
+
+
+   

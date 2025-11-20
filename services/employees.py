@@ -11,12 +11,6 @@ class EmployeesService:
     def createEmployee(self, first_name, last_name, employee_email, company_id, department_id, employee_status, profile_pic, employee_pasword):
         query = "insert into employees( employee_id, first_name, last_name, employee_email, company_id, department_id, employee_status, profile_pic, employee_password) values( %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         try:
-            # employee_id = str(uuid.uuid4())
-            # cursor = self.db.get_cursor()
-            # data = (employee_id,first_name, last_name, employee_email, company_id,  department_id, employee_status, profile_pic, employee_pasword)
-            # cursor.execute(query, data)
-            # self.db.commit()
-            # return True
             with Database() as cursor:
                 employee_id = str(uuid.uuid4())
                 data = (employee_id,first_name, last_name, employee_email, company_id,  department_id, employee_status, profile_pic, employee_pasword)
@@ -25,22 +19,11 @@ class EmployeesService:
         except Exception as e:
            # print(e)
             return False
-        # finally:
-        #     self.db.close() 
 
     # view employee using the company id 
     def viewEmployees(self, company_id):
         query = "SELECT * FROM employees WHERE company_id = %s"
         try:
-            # cursor = self.db.get_cursor()
-            # data = (company_id)
-            # cursor.execute(query, data)
-            # if cursor.rowcount  == 0:
-            #     return False
-            # else:
-            #     employees = cursor.fetchall()
-            #     print(employees)
-            #     return employees
             with Database() as cursor:
                 data = (company_id)
                 cursor.execute(query, data)
@@ -53,22 +36,10 @@ class EmployeesService:
         except Exception as e:
             #print(e)
             return False
-        # finally:
-        #     self.db.close() 
-
 
     def viewEmployeeDepartment(self, department_id):
         query = "SELECT * FROM employees WHERE department_id = %s"
         try:
-            # cursor = self.db.get_cursor()
-            # data = (department_id)
-            # cursor.execute(query, data)
-            # if cursor.rowcount  == 0:
-            #     return False
-            # else:
-            #     employees = cursor.fetchall()
-            #     print(employees)
-            #     return employees
             with Database() as cursor:
                 data = (department_id)
                 cursor.execute(query, data)
@@ -81,21 +52,10 @@ class EmployeesService:
         except Exception as e:
             # print(e)
             return False
-        # finally:
-        #     self.db.close() 
-
 
     def employeeeLogin(self, employee_email, password):
         query = "SELECT * FROM employees WHERE employee_email = %s"
         try:
-            # cursor = self.db.get_cursor()
-            # data = (employee_email)
-            # cursor.execute(query, data)
-            # if cursor.rowcount  == 0:
-            #     return False
-            # else:
-            #     employee = cursor.fetchone()
-            #     return employee
             with Database() as cursor:
                 data = (employee_email)
                 cursor.execute(query, data)
@@ -107,19 +67,10 @@ class EmployeesService:
         except Exception as e:
             # print(e)
             return False
-
 
     def employeeProfile(self, employee_email):
         query = "SELECT * FROM employees WHERE employee_email = %s"
         try:
-            # cursor = self.db.get_cursor()
-            # data = (employee_email)
-            # cursor.execute(query, data)
-            # if cursor.rowcount  == 0:
-            #     return False
-            # else:
-            #     employee = cursor.fetchone()
-            #     return employee  
             with Database() as cursor:
                 data = (employee_email)
                 cursor.execute(query, data)
@@ -131,19 +82,10 @@ class EmployeesService:
         except Exception as e:
             # print(e)
             return False
-        # finally:
-        #     self.db.close()
-        
-
 
     def updateEmployeeProfile(self, employee_id, first_name, last_name, employee_email, department_id, employee_status, profile_pic, employee_password):
         query = "UPDATE employees SET first_name = %s, last_name = %s, employee_email = %s, department_id = %s, employee_status = %s, profile_pic = %s, employee_password = %s WHERE employee_id = %s"
         try:
-            # cursor = self.db.get_cursor()
-            # data = (first_name, last_name, employee_email, department_id, employee_status, profile_pic, employee_password, employee_id)
-            # cursor.execute(query, data)
-            # self.db.commit()
-            # return True
             with Database() as cursor:
                 data = (first_name, last_name, employee_email, department_id, employee_status, profile_pic, employee_password, employee_id)
                 cursor.execute(query, data)
@@ -151,19 +93,10 @@ class EmployeesService:
         except Exception as e:
             # print(e)
             return False
-        # finally:
-        #     self.db.close() 
-
-
 
     def deleteEmployee(self, employee_id):
         query = "DELETE FROM employees WHERE employee_id = %s"
         try:
-            # cursor = self.db.get_cursor()
-            # data = (employee_id)
-            # cursor.execute(query, data)
-            # self.db.commit()
-            # return True
             with Database() as cursor:
                 data = (employee_id)
                 cursor.execute(query, data)
@@ -171,32 +104,41 @@ class EmployeesService:
         except Exception as e:
             # print(e)
             return False
-        # finally:
-        #     self.db.close() 
 
+    def viewEmployeeOrders(self, employee_id):
+        query = """
+    SELECT 
+        o.order_id,
+        o.order_date,
+        o.is_paid AS order_status,
 
+        m.menu_id,
+        m.menu_name,
+        m.menu_price,
+        m.menu_photo AS menu_image,
 
+        c.company_id,
+        c.company_name,
 
-    
+        e.first_name,
+        e.last_name
 
+    FROM orders o
+    LEFT JOIN menu m ON o.menu_id = m.menu_id   -- changed from "menus" to "menu"
+    LEFT JOIN companies c ON m.restaurant_id = c.company_id   -- assuming company linked via restaurant
+    LEFT JOIN employees e ON o.employee_id = e.employee_id
+    WHERE o.employee_id = %s
+    ORDER BY o.order_date DESC
+"""
 
-
-
-
-
-
-    
-
-
-
-
-
-
-
-        
-
-
-
-
-
-    
+        try:
+            with Database() as cursor:
+                cursor.execute(query, (employee_id,))
+                if cursor.rowcount == 0:
+                    return False
+                
+                orders = cursor.fetchall()
+                return orders
+        except Exception as e:
+            print("viewEmployeeOrders Error:", e)
+            return False
